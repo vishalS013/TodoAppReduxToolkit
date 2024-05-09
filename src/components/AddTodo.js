@@ -4,6 +4,7 @@ import Modal from "react-bootstrap/Modal";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  PostTodosAsync,
   addTodo,
   handleChange,
   toggleModal,
@@ -22,7 +23,7 @@ function AddTodo() {
 
 
 
-  const addTodoHandler = (e) => {
+  const addTodoHandler = async(e) => {
     e.preventDefault();
     const { title, description } = currentTodo;
 
@@ -34,11 +35,8 @@ function AddTodo() {
 
       dispatch(
         updateTodo(currentTodo),
-        handleClose(true),
-
+        handleClose(),
       );
-
-
     } else {
       if (title === " " || description === "") {
         alert("all fields are required")
@@ -49,14 +47,21 @@ function AddTodo() {
           description,
           
         };
-        console.log("else condition", newTodo);
+        console.log("else condition ---==--=-=-=-> in Add Todo Component", newTodo);
         dispatch(addTodo(newTodo));
+        try{
+          await dispatch(PostTodosAsync(newTodo))
+          console.log("TRY  in await  ---==--=-=-=-> in Add Todo Component", dispatch(PostTodosAsync(newTodo)))
+        }
+        catch(error){
+          console.log(error);
+        }
       }
-
-      handleClose(true);
-
-
+      
+      
+      
     }
+    handleClose()
   };
   return (
     <>
