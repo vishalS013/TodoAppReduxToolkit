@@ -4,8 +4,7 @@ import Modal from "react-bootstrap/Modal";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  PostTodosAsync,
-  addTodo,
+  AddTodos,
   handleChange,
   toggleModal,
   updateTodo,
@@ -51,7 +50,7 @@ function AddTodo() {
 
 
         // eh aa reha apa nu store to jis naal add ho rhe todos list vich
-        dispatch(PostTodosAsync(newTodo));
+        dispatch(AddTodos(newTodo));
       
       }
       

@@ -25,7 +25,7 @@ export const fetchTodo = createAsyncThunk('todo/fetchTodo', async () => {
 });
 
 // posting data in ui via Todos component
-export const PostTodosAsync = createAsyncThunk('todo/post', async (newTodo) => {
+export const AddTodos = createAsyncThunk('todo/post', async (newTodo) => {
   try {
     const response = await axios.post("http://localhost:4000/posts", newTodo)
     return response.data
@@ -46,7 +46,7 @@ export const updateTodo = createAsyncThunk('todo/update', async (currentTodo) =>
 });
 
 
-// For deleting data 
+// For deleting data and we are using this in Todos.js on delete button to get id -=-=-=-=-=>
 export const deleteTodo = createAsyncThunk('todo/deleteTodo', async (id) => {
   try {
     await axios.delete(`http://localhost:4000/posts/${id}`)
@@ -65,6 +65,7 @@ export const todoSlice = createSlice({
       state.todos.push(action.payload)
 
     },
+    
     // removeTodo: (state, action) => {
     //   state.todos = state.todos.filter((todo) => todo.id !== action.payload)
     // },
@@ -128,19 +129,19 @@ export const todoSlice = createSlice({
 
     //fotr adding todos in list we need ta call on AddTodos this  reduceer method 
     builder
-      .addCase(PostTodosAsync.pending, (state, action) => {
+      .addCase(AddTodos.pending, (state, action) => {
         state.loading = true;
         state.error = undefined;
         console.log("-=---=-=-> pending working");
 
       })
-      .addCase(PostTodosAsync.fulfilled, (state, action) => {
+      .addCase(AddTodos.fulfilled, (state, action) => {
         state.loading = false;
         state.todos = [...state.todos, action.payload]
         console.log("-=---=-=-> Fulfilled working", state.todos);
 
       })
-      .addCase(PostTodosAsync.rejected, (state, action) => {
+      .addCase(AddTodos.rejected, (state, action) => {
         state.loading = false
         state.error = action.error.message
         console.log("-=---=-=-> Error working");
@@ -153,11 +154,13 @@ export const todoSlice = createSlice({
       state.error = undefined
       console.log("-=---=-=-> pending working");
     })
+
       .addCase(fetchTodo.rejected, (state, action) => {
         state.loading = false
         state.error = action.error.message
         console.log("-=---=-=-> error working");
       })
+
       .addCase(fetchTodo.fulfilled, (state, action) => {
         state.loading = false
         state.error = undefined
@@ -172,11 +175,13 @@ export const todoSlice = createSlice({
       state.error = undefined
       console.log("-=---=-=-> pending working");
     })
+
       .addCase(updateTodo.rejected, (state, action) => {
         state.loading = false
         state.error = action.error.message
         console.log("-=---=-=-> error working");
       })
+
       .addCase(updateTodo.fulfilled, (state, action) => {
         state.loading = false
         state.error = undefined
@@ -187,33 +192,35 @@ export const todoSlice = createSlice({
           if (todo.id === id) {
             console.log(todo.id === id, "todo.id === id");
             //first way 
-            
+
             // return { ...todo, title, description }
 
             //second way
-            todo.title=title;
-            todo.description=description;
+            todo.title = title;
+            todo.description = description;
 
           }
           return todo;
         })
       })
 
-// for deleting case
+    // for deleting case
 
     builder.addCase(deleteTodo.pending, (state, action) => {
       state.loading = true
       state.error = undefined
       console.log("-=---=-=-> pending working");
     })
+
       .addCase(deleteTodo.rejected, (state, action) => {
         state.loading = false
         state.error = action.error.message
         console.log("-=---=-=-> error working");
       })
+
       .addCase(deleteTodo.fulfilled, (state, action) => {
         state.loading = false
-          state.todos = state.todos.filter((todo) => todo.id !== action.payload)
+        state.todos = state.todos.filter((todo) => todo.id !== action.payload)
 
       })
   },
