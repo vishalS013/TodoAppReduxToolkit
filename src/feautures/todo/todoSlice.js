@@ -47,6 +47,7 @@ export const updateTodo = createAsyncThunk('todo/update', async (currentTodo) =>
 
 
 // For deleting data and we are using this in Todos.js on delete button to get id -=-=-=-=-=>
+  // we have to take varible so that we can use this in other component and in tis way we are calling our API
 export const deleteTodo = createAsyncThunk('todo/deleteTodo', async (id) => {
   try {
     await axios.delete(`http://localhost:4000/posts/${id}`)
