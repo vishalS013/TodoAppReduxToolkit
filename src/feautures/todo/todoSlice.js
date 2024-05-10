@@ -25,10 +25,32 @@ export const fetchTodo = createAsyncThunk('todo/fetchTodo', async () => {
 });
 
 // posting data in ui via Todos component
-export const PostTodosAsync = createAsyncThunk('todo/PostTodosAsync', async (newTodo) => {
+export const PostTodosAsync = createAsyncThunk('todo/post', async (newTodo) => {
   try {
     const response = await axios.post("http://localhost:4000/posts", newTodo)
     return response.data
+  } catch (error) {
+    throw Error(error.response.data.message);
+  }
+});
+
+
+//updateTodo we also need to call this in our Todo component
+export const updateTodo = createAsyncThunk('todo/update', async (currentTodo) => {
+  try {
+    const response = await axios.put(`http://localhost:4000/posts/${currentTodo.id}`, currentTodo)
+    return response.data
+  } catch (error) {
+    throw Error(error.response.data.message);
+  }
+});
+
+
+// For deleting data 
+export const deleteTodo = createAsyncThunk('todo/deleteTodo', async (id) => {
+  try {
+    await axios.delete(`http://localhost:4000/posts/${id}`)
+    return id
   } catch (error) {
     throw Error(error.response.data.message);
   }
@@ -43,9 +65,10 @@ export const todoSlice = createSlice({
       state.todos.push(action.payload)
 
     },
-    removeTodo: (state, action) => {
-      state.todos = state.todos.filter((todo) => todo.id !== action.payload)
-    },
+    // removeTodo: (state, action) => {
+    //   state.todos = state.todos.filter((todo) => todo.id !== action.payload)
+    // },
+
     toggleModal: (state, action) => {
       state.currentIndex = null;
       state.isModalOpen = action.payload;
@@ -68,18 +91,21 @@ export const todoSlice = createSlice({
         [name]: value,
       };
     },
-    updateTodo: (state, action) => {
-      const { id, title, description } = action.payload;
 
-      console.log(id, title, description, "descriptin")
-      state.todos = state.todos.map((todo) => {
-        if (todo.id === id) {
-          console.log(todo.id === id, "todo.id === id");
-          return { ...todo, title, description }
-        }
-        return todo;
-      });
-    },
+    // now we already updating via extra reducer no need to add this reducer
+
+    // updateTodo: (state, action) => {
+    //   const { id, title, description } = action.payload;
+
+    //   console.log(id, title, description, "descriptin")
+    //   state.todos = state.todos.map((todo) => {
+    //     if (todo.id === id) {
+    //       console.log(todo.id === id, "todo.id === id");
+    //       return { ...todo, title, description }
+    //     }
+    //     return todo;
+    //   });
+    // },
 
     completeTodo: (state, action) => {
       const { index } = action.payload
@@ -98,6 +124,9 @@ export const todoSlice = createSlice({
   //Creating extra reducers or PostAsyncData
 
   extraReducers: (builder) => {
+
+
+    //fotr adding todos in list we need ta call on AddTodos this  reduceer method 
     builder
       .addCase(PostTodosAsync.pending, (state, action) => {
         state.loading = true;
@@ -107,7 +136,7 @@ export const todoSlice = createSlice({
       })
       .addCase(PostTodosAsync.fulfilled, (state, action) => {
         state.loading = false;
-        state.todos = action.payload;
+        state.todos = [...state.todos, action.payload]
         console.log("-=---=-=-> Fulfilled working", state.todos);
 
       })
@@ -135,10 +164,62 @@ export const todoSlice = createSlice({
         state.todos = action.payload
         console.log("-=---=-=-> action.payload working", action.payload);
       })
+
+
+    //Updating todo in Api Pending and rejected add case will remain same 
+    builder.addCase(updateTodo.pending, (state, action) => {
+      state.loading = true
+      state.error = undefined
+      console.log("-=---=-=-> pending working");
+    })
+      .addCase(updateTodo.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.error.message
+        console.log("-=---=-=-> error working");
+      })
+      .addCase(updateTodo.fulfilled, (state, action) => {
+        state.loading = false
+        state.error = undefined
+        const { id, title, description } = action.payload;
+
+        console.log(id, title, description, "descriptin")
+        state.todos = state.todos.map((todo) => {
+          if (todo.id === id) {
+            console.log(todo.id === id, "todo.id === id");
+            //first way 
+            
+            // return { ...todo, title, description }
+
+            //second way
+            todo.title=title;
+            todo.description=description;
+
+          }
+          return todo;
+        })
+      })
+
+// for deleting case
+
+    builder.addCase(deleteTodo.pending, (state, action) => {
+      state.loading = true
+      state.error = undefined
+      console.log("-=---=-=-> pending working");
+    })
+      .addCase(deleteTodo.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.error.message
+        console.log("-=---=-=-> error working");
+      })
+      .addCase(deleteTodo.fulfilled, (state, action) => {
+        state.loading = false
+          state.todos = state.todos.filter((todo) => todo.id !== action.payload)
+
+      })
   },
 
 })
 
-export const { addTodo, removeTodo, editTodo, toggleModal, updateTodo, handleChange, completeTodo } = todoSlice.actions
+export const { addTodo, removeTodo, editTodo, toggleModal, handleChange, completeTodo } = todoSlice.actions
 
-export default todoSlice.reducer
+export default todoSlice.reducer  

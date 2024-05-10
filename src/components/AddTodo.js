@@ -23,7 +23,7 @@ function AddTodo() {
 
 
 
-  const addTodoHandler = async(e) => {
+  const addTodoHandler = (e) => {
     e.preventDefault();
     const { title, description } = currentTodo;
 
@@ -48,14 +48,11 @@ function AddTodo() {
           
         };
         console.log("else condition ---==--=-=-=-> in Add Todo Component", newTodo);
-        dispatch(addTodo(newTodo));
-        try{
-          await dispatch(PostTodosAsync(newTodo))
-          console.log("TRY  in await  ---==--=-=-=-> in Add Todo Component", dispatch(PostTodosAsync(newTodo)))
-        }
-        catch(error){
-          console.log(error);
-        }
+
+
+        // eh aa reha apa nu store to jis naal add ho rhe todos list vich
+        dispatch(PostTodosAsync(newTodo));
+      
       }
       
       

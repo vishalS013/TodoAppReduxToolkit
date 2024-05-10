@@ -3,7 +3,7 @@ import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
 // calling fetchTodo here
-import { removeTodo, editTodo, completeTodo, fetchTodo } from '../feautures/todo/todoSlice'
+import { removeTodo, editTodo, completeTodo, fetchTodo, deleteTodo } from '../feautures/todo/todoSlice'
 import Spinner from 'react-bootstrap/Spinner';
 
 
@@ -101,7 +101,7 @@ function Todos() {
                           </button>
                           <button
                             className="text-white bg-red-500 border-0 py-1 px-4 focus:outline-none hover:bg-red-600 rounded text-md mr-5 w-28"
-                            onClick={() => dispatch(removeTodo(todo.id))}
+                            onClick={() => dispatch(deleteTodo(todo.id))}
                           >
                             Delete
                           </button>
